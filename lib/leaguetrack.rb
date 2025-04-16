@@ -3,6 +3,5 @@
 require_relative "leaguetrack/version"
 
 module Leaguetrack
-  class Error < StandardError; end
-  # Your code goes here...
+  #TODO - this class should handle the data coming form Lapi, deal with data management, etc
 end
