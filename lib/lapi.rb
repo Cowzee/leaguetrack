@@ -1,0 +1,2 @@
+#add requires
+require 'faraday'
