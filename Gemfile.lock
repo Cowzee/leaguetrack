@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     diff-lcs (1.6.1)
+    dotenv (3.1.8)
     faraday (2.13.0)
       faraday-net_http (>= 2.0, < 3.5)
       json
@@ -34,6 +35,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler
+  dotenv
   faraday
   rbs
   rspec

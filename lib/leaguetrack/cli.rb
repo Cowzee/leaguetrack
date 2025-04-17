@@ -12,20 +12,27 @@ module Leaguetrack
     end
 
     def run
-      OptionParser.new do |parser|
+      opts = OptionParser.new do |parser|
         parser.banner = "USAGE: leaguetrack [options]"
-        parser.on("-u USERNAME", "--user USERNAME", "Sets user for api") do |user|
+        parser.on("-u USERNAME", "--user USERNAME", "Sets user for api calls") do |user|
           @options[:username] = user
         end
+        parser.on("-t TAG", "--tag TAG", "Sets tag for api calls") do |tag|
+          @options[:tag] = tag
+        end
         parser.on("-h", "--help", "Prints this help") do
-          puts opts
+          puts parser
           exit
-        end.parse!(@args)
+        end
+      end
+      opts.parse!(@args)
+
+      if @options[:username] and @options[:tag]
+        Leaguetrack::App.new(@options[:username], @options[:tag]).run()
+      else
+        puts "Please enter a summoner name and tag.\n" + opts.to_s
       end
 
-      if @options[:username]
-        Leaguetrack::App.new(@options[:username]).run()
-      end
 
     end
 

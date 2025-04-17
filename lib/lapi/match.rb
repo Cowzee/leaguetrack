@@ -5,6 +5,7 @@ module Lapi
 
       def initialize(puuid)
         @puuid = puuid
+        super
       end
 
       def path

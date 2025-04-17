@@ -5,3 +5,4 @@ gem "rspec"
 gem "rbs"
 gem "bundler" 
 gem "faraday"
+gem 'dotenv'

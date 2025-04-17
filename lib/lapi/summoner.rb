@@ -5,18 +5,14 @@ module Lapi
 
       def initialize(summoner_name)
         @summoner_name = summoner_name
-        #TODO - figure out if summoner-name should be cleaned up
-      end
-
-      def path
-        "temp-path#{summoner_name}"
+        @path = "/riot/account/v1/accounts/by-riot-id/#{summoner_name}"
+        super()
       end
 
       def call
-        # res = super 
+        res = super(@path)
 
-        # res[:data] #TODO - work w/ data
-        puts @summoner_name #stub
+        puts res.body
       end
     
     end

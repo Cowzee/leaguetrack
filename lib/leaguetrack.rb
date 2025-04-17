@@ -7,8 +7,8 @@ require "json"
 
 module Leaguetrack
   class App
-    def initialize(summoner)
-      @summoner = summoner
+    def initialize(account_name, tag)
+      @summoner = account_name.to_s + "/" + tag
     end
 
     def run
