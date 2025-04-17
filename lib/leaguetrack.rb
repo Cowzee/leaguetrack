@@ -17,13 +17,21 @@ module Leaguetrack
       sum_data = Lapi::Summoner::FindByName.new(@summoner).call
       @puuid = JSON.parse(sum_data)["puuid"] #or stored
 
-      timestamp = 0 # Retreive from storage - most recent entry or 0
-
-      matches_data = Lapi::Match::RecentIDs.new(@puuid, timestamp).call #TODO: Fix 
+      matches_data = Lapi::Match::RecentIDs.new(@puuid, most_recent_match).call #TODO: Fix 
       @ids = JSON.parse(matches_data)
 
-      match = JSON.pretty_generate(Lapi::Match::ByID.new(@ids[0]).call)
-      File.open("match.json", 'w') {|file| file.write(match)}
+
+      match_client = Lapi::Match::ByID.new(@ids)
+      matches = []
+      match_client.batch_call do |body|
+        matches << user_match_data(body)
+      end
+
+      print matches
+
+
+
+      # File.open("match.json", 'w') {|file| file.write(match)}
       # What are important values here? we need to check participantDTOs for user pos
       # and find enemy laner in team pos, won or lost, game time?
 
@@ -31,6 +39,31 @@ module Leaguetrack
       # TODO: STORE MATCHES
       # TODO: CREATE COMMANDLINE UI
     end
+
+    def most_recent_match
+      0
+    end
+
+    def user_match_data(string_match)
+        match = JSON.parse(string_match)
+        user_player ||= match['info']['participants'].find {|p| p['puuid'] == @puuid}
+        user_player_lane = user_player['teamPosition']
+        team_idx = user_player['teamId'] == 100 ? 5 : 0
+        opponent_player ||= match['info']['participants'][team_idx, 5].find do |p|
+          p['teamPosition'] == user_player_lane
+        end
+        user_won = user_player['win']
+
+        user_data = {
+          :role => user_player_lane,
+          :champ => user_player['championName'],
+          :matchup => opponent_player['championName'],
+          :win => user_won
+        }
+        user_data
+    end
+
+
   end
 end
  

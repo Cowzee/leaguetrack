@@ -6,11 +6,26 @@ module Lapi
     def initialize
       @conn = Faraday.new(url: host)
       @conn.params['api_key'] = api_key
+      @conn.use Faraday::Response::RaiseError
     end
 
     def call(path)
-      @conn.get(path)
-      #TODO: ERROR HANDLING - Rate limit !
+
+      begin
+        @conn.get(path) 
+      rescue Faraday::Error => err
+        if err.status.to_i == 429
+          raise err
+        else
+          error_body = JSON.parse(err.response[:body])
+          puts error_body["status"]["message"]
+          exit 
+        end
+
+      end
+      
+
+
     end 
   
     def api_key
