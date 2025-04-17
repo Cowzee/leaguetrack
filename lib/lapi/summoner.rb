@@ -11,8 +11,7 @@ module Lapi
 
       def call
         res = super(@path)
-
-        puts res.body
+        res.body
       end
     
     end

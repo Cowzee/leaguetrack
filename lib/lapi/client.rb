@@ -10,6 +10,7 @@ module Lapi
 
     def call(path)
       @conn.get(path)
+      #TODO: ERROR HANDLING - Rate limit !
     end 
   
     def api_key
