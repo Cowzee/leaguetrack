@@ -1,5 +1,10 @@
 #add requires
 require 'faraday'
+require 'json'
+require_relative './lapi/client'
+require_relative './lapi/summoner'
+require_relative './lapi/match'
+
 
 module Lapi
   def api_key

@@ -13,9 +13,10 @@ module Lapi
       end
 
       def call
-        res = super 
+        # res = super 
 
-        res[:data] #TODO - work w/ data
+        # res[:data] #TODO - work w/ data
+        puts @summoner_name #stub
       end
     
     end

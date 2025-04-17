@@ -12,6 +12,8 @@ GEM
     logger (1.7.0)
     net-http (0.6.0)
       uri
+    rbs (3.9.2)
+      logger
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
@@ -33,6 +35,7 @@ PLATFORMS
 DEPENDENCIES
   bundler
   faraday
+  rbs
   rspec
 
 BUNDLED WITH
