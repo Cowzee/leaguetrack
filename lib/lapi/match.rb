@@ -18,7 +18,6 @@ module Lapi
       end
     end
     class ByID < Lapi::Client
-      #TODO: Select by queue type
       attr_accessor :ids
       attr_accessor :cur_id
       def initialize(ids)

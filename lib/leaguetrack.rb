@@ -9,10 +9,16 @@ require "json"
 module Leaguetrack
   class App
     def initialize(account_name, tag)
-      @summoner = account_name.to_s + "/" + tag
+      @summoner = clean_sum_name(account_name, tag)
+
       @storage_handler = Leaguetrack::Storage.new()
       @user = nil
       @timestamp = 0
+    end
+
+
+    def clean_sum_name(name, tag)
+      "#{name.gsub!(' ','%20')}/#{tag}"
     end
 
     def run
@@ -25,7 +31,7 @@ module Leaguetrack
     end
 
     def most_recent_match
-      @storage_handler.get_timestamp
+      @storage_handler.get_timestamp(@user)
     end
     
     def get_user
@@ -49,6 +55,7 @@ module Leaguetrack
         opponent_player ||= match['info']['participants'][team_idx, 5].find do |p|
           p['teamPosition'] == user_player_lane
         end
+        
         user_won = user_player['win']
 
         user_data = {
@@ -61,19 +68,25 @@ module Leaguetrack
     end
 
     def get_matches
-      puts "FETCHING RECENT MATCHES..."
+      puts "FETCHING RECENT RANKED MATCHES..."
 
       matches_data = Lapi::Match::RecentIDs.new(@puuid, most_recent_match).call
       @ids = JSON.parse(matches_data)
 
       match_client = Lapi::Match::ByID.new(@ids)
+      puts "PARSING #{@ids.count} MATCHES"
       matches = []
       match_client.batch_call do |body, id|
         parsed = JSON.parse(body)
-        matches << user_match_data(parsed)
-        if id == @ids[-1]
-          @timestamp = parsed['info']['endgameEndTimestamp']
+
+        if [420,400].include? parsed['info']['queueId']
+          matches << user_match_data(parsed)
         end
+    
+        if id == @ids[0]
+          @timestamp = parsed['info']['gameEndTimestamp']
+        end
+        
       end
 
       matches
@@ -83,7 +96,7 @@ module Leaguetrack
       matches.each do |match|
         @storage_handler.add_matchup(@user, match)
       end
-      @storage_handler.update_timestamp(@timestamp)
+      @storage_handler.update_timestamp(@user, @timestamp)
 
       @storage_handler.write_data
     end

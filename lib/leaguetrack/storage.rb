@@ -7,30 +7,27 @@ module Leaguetrack
     end
 
     def load
-      if File.exist?(@file_path)
+      if File.exist?(@file_path) && (not File.zero?(@file_path))
         JSON.parse(File.read(@file_path), symbolize_names: true)
       else
-        json_format = %{
-                "timestamp": 0,
-                "users": [
-                  {
-                    "summoner_name": "",
-                    "puuid": "",
-                    "matchups": []
-                  }
-                ]
-              }
-                        
-        JSON.parse(json_format)
+        json_format = <<~JSON
+          {
+            "users": [
+
+            ]
+          }
+        JSON
+
+        JSON.parse(json_format, symbolize_names: true)
       end
     end
 
-    def update_timestamp(timestamp)
-      @data[:timestamp] = timestamp
+    def update_timestamp(user, timestamp)
+      @data.fetch(:users, []).find {|u| u == user}[:timestamp] = timestamp
     end
 
-    def get_timestamp
-      @data.fetch(:timestamp, nil)
+    def get_timestamp(user)
+      @data.fetch(:users, []).find {|u| u == user}[:timestamp] || 0
     end
 
     def get_user_by_puuid(puuid)
