@@ -12,12 +12,13 @@ module Lapi
       end
 
       def call
-        res = super(@path) # res = Lapi::Client.new.call with local host and path
+        res = super(@path)
 
         res.body
       end
     end
     class ByID < Lapi::Client
+      #TODO: Select by queue type
       attr_accessor :ids
       attr_accessor :cur_id
       def initialize(ids)
@@ -37,7 +38,7 @@ module Lapi
           begin
             res = call(id)
             if block_given?
-              yield res
+              yield res, id
             end
 
           rescue Faraday::TooManyRequestsError
