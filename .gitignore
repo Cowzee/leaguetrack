@@ -8,6 +8,5 @@
 /tmp/
 .env
 /data/
-/bin/match.json
 # rspec failure tracking
 .rspec_status

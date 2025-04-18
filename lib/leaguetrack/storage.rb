@@ -1,5 +1,6 @@
 module Leaguetrack
   class Storage
+
     def initialize(file_path = File.expand_path('../../data/leaguetrack_data.json', __dir__))
       @file_path = file_path
       @data = load
@@ -7,10 +8,20 @@ module Leaguetrack
 
     def load
       if File.exist?(@file_path)
-        #TODO: add file template and load if leaguetrack_data is empty or doesnt exist
         JSON.parse(File.read(@file_path), symbolize_names: true)
       else
-        raise "File load error"
+        json_format = %{
+                "timestamp": 0,
+                "users": [
+                  {
+                    "summoner_name": "",
+                    "puuid": "",
+                    "matchups": []
+                  }
+                ]
+              }
+                        
+        JSON.parse(json_format)
       end
     end
 

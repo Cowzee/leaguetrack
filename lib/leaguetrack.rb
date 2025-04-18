@@ -12,29 +12,37 @@ module Leaguetrack
       @summoner = account_name.to_s + "/" + tag
       @storage_handler = Leaguetrack::Storage.new()
       @user = nil
+      @timestamp = 0
     end
 
     def run
-
-      if @user = @storage_handler.get_user_by_summoner(@summoner)
-        @puuid = @storage_handler.get_puuid_by_user(@user)
-      else
-        sum_data = Lapi::Summoner::FindByName.new(@summoner).call
-        @puuid = JSON.parse(sum_data)["puuid"] 
-        @user = @storage_handler.add_user(@summoner, @puuid)
-      end
-
+      
+      get_user
       store_matches(get_matches)
+
+      #TODO: CONSOLE INPUT
 
     end
 
     def most_recent_match
       @storage_handler.get_timestamp
     end
+    
+    def get_user
+      print "FETCHING USER... "
+      if @user = @storage_handler.get_user_by_summoner(@summoner)
+        puts "STORED USER FOUND"
+        @puuid = @storage_handler.get_puuid_by_user(@user)
+      else
+        puts "STORED USER NOT FOUND - FETCHING FROM RIOT API"
+        sum_data = Lapi::Summoner::FindByName.new(@summoner).call
+        @puuid = JSON.parse(sum_data)["puuid"] 
+        @user = @storage_handler.add_user(@summoner, @puuid)
+      end
+    end
 
-    def user_match_data(string_match)
+    def user_match_data(match)
 
-        match = JSON.parse(string_match)
         user_player ||= match['info']['participants'].find {|p| p['puuid'] == @puuid}
         user_player_lane = user_player['teamPosition']
         team_idx = user_player['teamId'] == 100 ? 5 : 0
@@ -53,13 +61,19 @@ module Leaguetrack
     end
 
     def get_matches
+      puts "FETCHING RECENT MATCHES..."
+
       matches_data = Lapi::Match::RecentIDs.new(@puuid, most_recent_match).call
       @ids = JSON.parse(matches_data)
 
       match_client = Lapi::Match::ByID.new(@ids)
       matches = []
-      match_client.batch_call do |body|
-        matches << user_match_data(body)
+      match_client.batch_call do |body, id|
+        parsed = JSON.parse(body)
+        matches << user_match_data(parsed)
+        if id == @ids[-1]
+          @timestamp = parsed['info']['endgameEndTimestamp']
+        end
       end
 
       matches
@@ -69,6 +83,7 @@ module Leaguetrack
       matches.each do |match|
         @storage_handler.add_matchup(@user, match)
       end
+      @storage_handler.update_timestamp(@timestamp)
 
       @storage_handler.write_data
     end
