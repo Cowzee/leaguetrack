@@ -6,6 +6,7 @@ module Lapi
     def initialize
       @conn = Faraday.new(url: host)
       @conn.params['api_key'] = api_key
+      @conn.headers['User-Agent'] = "Leaguetrack Testing"
       @conn.use Faraday::Response::RaiseError
     end
 
@@ -13,13 +14,17 @@ module Lapi
 
       begin
         @conn.get(path) 
+
       rescue Faraday::Error => err
-        if err.status.to_i == 429
+        error_body = JSON.parse(err.response[:body])
+
+        if error_body["status"]["status_code"] == 429
           raise err
+
         else
-          error_body = JSON.parse(err.response[:body])
           puts error_body["status"]["message"]
           exit 
+
         end
 
       end

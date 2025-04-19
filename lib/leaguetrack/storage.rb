@@ -56,6 +56,7 @@ module Leaguetrack
       user
     end
 
+    # ALL DATA TO BE USED IN PROGRAM IS IN @DATA , WRITE TO FILE ON EXIT
     def write_data
       File.write(@file_path, JSON.pretty_generate(@data))
     end

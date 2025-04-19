@@ -28,7 +28,7 @@ module Leaguetrack
       opts.parse!(@args)
 
       if @options[:username] and @options[:tag]
-        Leaguetrack::App.new(@options[:username], @options[:tag]).run()
+        Leaguetrack::App.new(@options[:username], @options[:tag]).init_run()
       else
         puts "Please enter a summoner name and tag.\n" + opts.to_s
       end

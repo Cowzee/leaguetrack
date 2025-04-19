@@ -1,6 +1,8 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    artii (2.1.2)
+    colorize (1.1.0)
     diff-lcs (1.6.1)
     dotenv (3.1.8)
     faraday (2.13.0)
@@ -34,7 +36,9 @@ PLATFORMS
   x64-mingw-ucrt
 
 DEPENDENCIES
+  artii
   bundler
+  colorize
   dotenv
   faraday
   rbs
